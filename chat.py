@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-
 """
-Chat Server
-===========
+Chat Server.
 
 This simple application uses WebSockets to run a primitive chat server.
 """
@@ -22,7 +20,6 @@ app.debug = 'DEBUG' in os.environ
 
 sockets = Sockets(app)
 redis = redis.from_url(REDIS_URL)
-
 
 
 class ChatBackend(object):
@@ -46,21 +43,24 @@ class ChatBackend(object):
 
     def send(self, client, data):
         """Send given data to the registered client.
-        Automatically discards invalid connections."""
+
+        Automatically discards invalid connections.
+        """
         try:
             client.send(data)
         except Exception:
             self.clients.remove(client)
 
     def run(self):
-        """Listens for new messages in Redis, and sends them to clients."""
+        """Listen for new messages in Redis, and sends them to clients."""
         for data in self.__iter_data():
             for client in self.clients:
                 gevent.spawn(self.send, client, data)
 
     def start(self):
-        """Maintains Redis subscription in the background."""
+        """Maintain Redis subscription in the background."""
         gevent.spawn(self.run)
+
 
 chats = ChatBackend()
 chats.start()
@@ -70,9 +70,10 @@ chats.start()
 def hello():
     return render_template('index.html')
 
+
 @sockets.route('/submit')
 def inbox(ws):
-    """Receives incoming chat messages, inserts them into Redis."""
+    """Receive incoming chat messages, inserts them into Redis."""
     while not ws.closed:
         # Sleep to prevent *constant* context-switches.
         gevent.sleep(0.1)
@@ -82,14 +83,13 @@ def inbox(ws):
             app.logger.info(u'Inserting message: {}'.format(message))
             redis.publish(REDIS_CHAN, message)
 
+
 @sockets.route('/receive')
 def outbox(ws):
-    """Sends outgoing chat messages, via `ChatBackend`."""
+    """Send outgoing chat messages, via `ChatBackend`."""
     chats.register(ws)
 
     while not ws.closed:
-        # Context switch while `ChatBackend.start` is running in the background.
+        # Context switch while `ChatBackend.start`
+        # is running in the background.
         gevent.sleep(0.1)
-
-
-
