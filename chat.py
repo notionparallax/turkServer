@@ -82,6 +82,7 @@ def inbox(ws):
         if message:
             app.logger.info(u'Inserting message: {}'.format(message))
             redis.publish(REDIS_CHAN, message)
+            ws.send(str(message) + " I hear you")
 
 
 @sockets.route('/receive')
