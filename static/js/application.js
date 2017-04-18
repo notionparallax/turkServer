@@ -11,13 +11,15 @@ var outbox = new ReconnectingWebSocket(ws_scheme + location.host + "/submit");
 
 inbox.onmessage = function(message) {
   var data = JSON.parse(message.data);
-  $("#chat-text").append("<div class='panel panel-default'>"+
-                           "<div class='panel-heading'>" +
-                             $('<span/>').text(data.handle).html() +
-                           "</div>" +
-                           "<div class='panel-body'>" +
-                             $('<span/>').text(data.text).html() +
-                           "</div>" +
+  $("#chat-text").append("<div>"+
+                           "<dl>" +
+                             "<dd>" +
+                               $('<span/>').text(data.handle).html() +
+                             "</dd>" +
+                             "<dt>" +
+                               $('<span/>').text(data.text).html() +
+                             "</dt>" +
+                           "</dl>" +
                          "</div>");
   $("#chat-text").stop().animate({
     scrollTop: $('#chat-text')[0].scrollHeight

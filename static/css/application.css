@@ -2,3 +2,28 @@
   overflow: auto;
   height: 500px;
 }
+
+dl {
+  margin: 0;
+  font-family: monospace;
+}
+
+dd, dt {
+    display: inline-block;
+    padding: 0.5em;
+}
+
+dd {
+  background-color: silver;
+  text-align: right;
+  width: 6em
+}
+
+dt {
+  background-color: gold;
+  width: 80rem;
+}
+
+#input-text {
+  font-family: monospace;
+}
