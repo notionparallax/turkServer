@@ -5,12 +5,13 @@ Chat Server.
 This simple application uses WebSockets to run a primitive chat server.
 """
 
-import os
-import logging
-import redis
-import gevent
 from flask import Flask, render_template
 from flask_sockets import Sockets
+import logging
+from logging.handlers import RotatingFileHandler
+import gevent
+import os
+import redis
 
 REDIS_URL = os.environ['REDIS_URL']
 REDIS_CHAN = 'chat'
