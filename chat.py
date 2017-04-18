@@ -86,7 +86,11 @@ def inbox(ws):
         if message:
             app.logger.warning(u'Inserting message: {}'.format(message))
             redis.publish(REDIS_CHAN, message)
-            ws.send(str(message) + " I hear you")
+            # message = json.loads(message)
+            # message["pass"] = "server"
+            # echo_response = json.dumps(message)
+            # app.logger.warning('/submit' + echo_response)
+            # ws.send(echo_response)
 
 
 @sockets.route('/receive')
