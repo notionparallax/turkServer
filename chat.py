@@ -35,12 +35,13 @@ class ChatBackend(object):
         for message in self.pubsub.listen():
             data = message.get('data')
             if message['type'] == 'message':
-                app.logger.info(u'Sending message: {}'.format(data))
+                app.logger.warning(u'Sending message: {}'.format(data))
                 yield data
 
     def register(self, client):
         """Register a WebSocket connection for Redis updates."""
         self.clients.append(client)
+        app.logger.warning('registered: ' + str(client))
 
     def send(self, client, data):
         """Send given data to the registered client.
@@ -69,6 +70,7 @@ chats.start()
 
 @app.route('/')
 def hello():
+    app.logger.warning('/')
     return render_template('index.html')
 
 
@@ -81,7 +83,7 @@ def inbox(ws):
         message = ws.receive()
 
         if message:
-            app.logger.info(u'Inserting message: {}'.format(message))
+            app.logger.warning(u'Inserting message: {}'.format(message))
             redis.publish(REDIS_CHAN, message)
             ws.send(str(message) + " I hear you")
 
@@ -90,8 +92,14 @@ def inbox(ws):
 def outbox(ws):
     """Send outgoing chat messages, via `ChatBackend`."""
     chats.register(ws)
+    app.logger.warning(u'subscribing')
 
     while not ws.closed:
         # Context switch while `ChatBackend.start`
         # is running in the background.
         gevent.sleep(0.1)
+
+
+handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)
+handler.setLevel(logging.DEBUG)
+app.logger.addHandler(handler)
